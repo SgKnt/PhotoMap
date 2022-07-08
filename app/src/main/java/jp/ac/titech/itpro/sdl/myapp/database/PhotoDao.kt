@@ -11,7 +11,7 @@ interface PhotoDao {
     val all: List<Photo>
 
     @Insert
-    fun insert(photo: Photo)
+    fun insert(photo: Photo): Int
 
     @Insert
     fun insertAll(photos: List<Photo>)
