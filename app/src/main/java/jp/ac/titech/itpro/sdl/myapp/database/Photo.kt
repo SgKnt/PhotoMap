@@ -8,7 +8,7 @@ import java.util.Date
 
 @Entity
 class Photo constructor(id: Int, photoURI: String, latitude: Float, longitude: Float, date: Date) {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     var id: Int = id
 
     @ColumnInfo(name = "photo_uri")
