@@ -1,10 +1,13 @@
 package jp.ac.titech.itpro.sdl.myapp
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -14,6 +17,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import jp.ac.titech.itpro.sdl.myapp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
@@ -23,10 +28,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Google Map
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        // Location (GPS)
         locationClient = LocationServices.getFusedLocationProviderClient(this)
+        // Camera
+        val cameraButton = findViewById<FloatingActionButton>(R.id.camera_button)
+        cameraButton.setOnClickListener{_: View ->
+
+        }
     }
 
     override fun onResume() {

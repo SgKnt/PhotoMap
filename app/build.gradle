@@ -30,6 +30,11 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    buildFeatures {
+        viewBinding true
+    }
+
 }
 
 dependencies {
@@ -44,9 +49,15 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
 
-def roomVersion = "2.4.2"
+
 dependencies {
+    def roomVersion = "2.4.2"
     implementation("androidx.room:room-runtime:$roomVersion")
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
+}
+
+dependencies {
+    def camerax_version = "1.2.0-alpha02"
+    implementation("androidx.camera:camera-core:$camerax_version")
 }
