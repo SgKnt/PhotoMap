@@ -3,6 +3,7 @@ package jp.ac.titech.itpro.sdl.myapp
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -11,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import com.google.android.gms.location.*
@@ -26,6 +26,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var fragmentCameraBinding: FragmentMapBinding
     private lateinit var map: GoogleMap
     private lateinit var locationClient: FusedLocationProviderClient
+    private lateinit var locationUpdateCallback: LocationCallback
+    private var latlng: LatLng? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,11 +42,21 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "On View Created")
+
         // Map
         val mapFragment = childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
         // Location
         locationClient = LocationServices.getFusedLocationProviderClient(this.requireActivity())
+        locationUpdateCallback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                super.onLocationResult(result)
+                val loc = result.lastLocation
+                latlng = LatLng(loc.latitude, loc.longitude)
+            }
+        }
+
         // Camera
         fragmentCameraBinding.cameraButton.setOnClickListener(
             Navigation.createNavigateOnClickListener(R.id.action_map_to_camera)
@@ -53,7 +65,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-        setLocation()
+        startLocationUpdate()
+        Handler(Looper.getMainLooper()).post{ setLocation() }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopLocationUpdate()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -61,37 +79,27 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         map.moveCamera(CameraUpdateFactory.zoomTo(15f))
     }
 
-    private fun setLocation() {
+    private fun startLocationUpdate() {
         requestLocationPermissions()
         for (permission in REQUIRED_PERMISSIONS) {
             if (ContextCompat.checkSelfPermission(requireContext(), permission) == PackageManager.PERMISSION_GRANTED) {
-                locationClient.lastLocation.addOnSuccessListener(this.requireActivity()) Loc@{loc ->
-                    loc?.let {
-                        val ll = LatLng(it.latitude, it.longitude)
-                        map.animateCamera(CameraUpdateFactory.newLatLng(ll))
-                    } ?: run {
-                        val request = LocationRequest.create().apply {
-                            interval = 10000
-                            fastestInterval = 5000
-                            priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-                        }
-                        locationClient.requestLocationUpdates(
-                            request,
-                            object : LocationCallback() {
-                                override fun onLocationResult(result: LocationResult) {
-                                    super.onLocationResult(result)
-                                    val loc = result.lastLocation
-                                    val ll = LatLng(loc.latitude, loc.longitude)
-                                    map.animateCamera(CameraUpdateFactory.newLatLng(ll))
-                                    locationClient.removeLocationUpdates(this)
-                                }
-                            }, Looper.getMainLooper()
-                        )
-                    }
-
+                val request = LocationRequest.create().apply {
+                    interval = 5000
+                    fastestInterval = 3000
+                    priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
                 }
-                return
+                locationClient.requestLocationUpdates(request, locationUpdateCallback, Looper.getMainLooper())
             }
+        }
+    }
+
+    private fun stopLocationUpdate() {
+        locationClient.removeLocationUpdates(locationUpdateCallback)
+    }
+
+    private fun setLocation() {
+        latlng?.let {
+            map.moveCamera(CameraUpdateFactory.newLatLng(it))
         }
     }
 
