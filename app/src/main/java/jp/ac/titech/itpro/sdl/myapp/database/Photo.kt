@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 @Entity
-class Photo constructor(id: Int, photoURI: String, latitude: Float, longitude: Float, date: Date) {
+class Photo(id: Int, photoURI: String, latitude: Float, longitude: Float, date: Date) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = id
 
