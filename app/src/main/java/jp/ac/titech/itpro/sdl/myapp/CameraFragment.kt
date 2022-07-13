@@ -11,14 +11,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import jp.ac.titech.itpro.sdl.myapp.databinding.FragmentCameraBinding
 
 class CameraFragment : Fragment() {
+    private val args: CameraFragmentArgs by navArgs()
     private lateinit var fragmentCameraBinding: FragmentCameraBinding
+    private val photoViewModel: PhotoViewModel by activityViewModels()
+    private var imageCapture: ImageCapture? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,24 +41,29 @@ class CameraFragment : Fragment() {
         if (allPermissionsGranted()) {
             startCamera()
         } else {
-            val launcher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) onRequestPermissionResult@{
+            requestCameraPermissions()
+        }
+        fragmentCameraBinding.cameraButton.setOnClickListener{ takePhoto() }
+    }
+
+    private fun requestCameraPermissions() {
+        val launcher =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) onRequestPermissionResult@{
                 for (permission in REQUIRED_PERMISSIONS) {
                     if (it[permission]!!) {
                         startCamera()
                         return@onRequestPermissionResult
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Permissions not granted by the user.",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
                 }
+                Toast.makeText(
+                    requireContext(),
+                    "Permissions not granted by the user.",
+                    Toast.LENGTH_SHORT
+                ).show()
                 Log.d(TAG, "All permission rejected")
                 requireActivity().finish()
             }
-            launcher.launch(REQUIRED_PERMISSIONS)
-        }
+        launcher.launch(REQUIRED_PERMISSIONS)
     }
 
     private fun startCamera() {
@@ -66,18 +77,40 @@ class CameraFragment : Fragment() {
                 .also {
                     it.setSurfaceProvider(fragmentCameraBinding.viewFinder.surfaceProvider)
                 }
+            // Image Capture
+            imageCapture = ImageCapture.Builder().build()
 
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
                 cameraProvider.unbindAll()
 
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview)
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture!!)
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
 
         }, ContextCompat.getMainExecutor(this.requireContext()))
+    }
+
+    private fun takePhoto() {
+        imageCapture?.takePicture(
+            ContextCompat.getMainExecutor(this.requireContext()),
+            object : ImageCapture.OnImageCapturedCallback() {
+                override fun onError(e: ImageCaptureException) {
+                    Log.e(TAG, "photo capture failed: ${e.message}", e)
+                }
+
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    photoViewModel.apply {
+                        photo = image
+                        latitude = args.latlong.latitude
+                        longitude = args.latlong.longitude
+                    }
+                    findNavController().navigate(R.id.action_camera_to_photoContent)
+                }
+            }
+        )
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
