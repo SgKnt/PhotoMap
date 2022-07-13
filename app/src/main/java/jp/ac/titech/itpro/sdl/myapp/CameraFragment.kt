@@ -107,7 +107,7 @@ class CameraFragment : Fragment() {
                         latitude = args.latlong.latitude
                         longitude = args.latlong.longitude
                     }
-                    findNavController().navigate(R.id.action_camera_to_photoContent)
+                    findNavController().navigate(R.id.action_camera_to_photo)
                 }
             }
         )

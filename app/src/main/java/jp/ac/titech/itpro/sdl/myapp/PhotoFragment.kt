@@ -10,11 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.camera.core.ImageProxy
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import jp.ac.titech.itpro.sdl.myapp.databinding.PhotoContentFragmentBinding
+import jp.ac.titech.itpro.sdl.myapp.databinding.PhotoFragmentBinding
 
-class PhotoContentFragment : Fragment() {
-    private lateinit var binding: PhotoContentFragmentBinding
+class PhotoFragment : Fragment() {
+    private lateinit var binding: PhotoFragmentBinding
     private val photoViewModel: PhotoViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -22,7 +21,7 @@ class PhotoContentFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = PhotoContentFragmentBinding.inflate(inflater, container, false)
+        binding = PhotoFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 

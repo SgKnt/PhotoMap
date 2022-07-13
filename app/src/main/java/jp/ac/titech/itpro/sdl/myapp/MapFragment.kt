@@ -73,7 +73,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         startLocationUpdate()
-        Handler(Looper.getMainLooper()).postDelayed({ setLocation() }, 1000)
+        Handler(Looper.getMainLooper()).postDelayed({ setLocation() }, 3000)
     }
 
     override fun onPause() {

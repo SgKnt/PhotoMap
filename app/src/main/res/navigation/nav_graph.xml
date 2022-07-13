@@ -11,8 +11,8 @@
         android:label="fragment_camera"
         tools:layout="@layout/fragment_camera" >
         <action
-            android:id="@+id/action_camera_to_photoContent"
-            app:destination="@id/photoContentFragment" />
+            android:id="@+id/action_camera_to_photo"
+            app:destination="@id/photoFragment" />
         <action
             android:id="@+id/action_camera_to_map"
             app:destination="@id/mapFragment" />
@@ -29,12 +29,12 @@
             app:destination="@id/cameraFragment" />
     </fragment>
     <fragment
-        android:id="@+id/photoContentFragment"
-        android:name="jp.ac.titech.itpro.sdl.myapp.PhotoContentFragment"
-        android:label="photo_content_fragment"
-        tools:layout="@layout/photo_content_fragment" >
+        android:id="@+id/photoFragment"
+        android:name="jp.ac.titech.itpro.sdl.myapp.PhotoFragment"
+        android:label="photo_fragment"
+        tools:layout="@layout/photo_fragment" >
         <action
-            android:id="@+id/action_photoContent_to_map"
+            android:id="@+id/action_photo_to_map"
             app:destination="@id/mapFragment" />
     </fragment>
 </navigation>
