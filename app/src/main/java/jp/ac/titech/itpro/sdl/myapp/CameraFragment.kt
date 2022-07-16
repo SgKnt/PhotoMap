@@ -19,6 +19,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import jp.ac.titech.itpro.sdl.myapp.databinding.FragmentCameraBinding
+import java.util.*
 
 class CameraFragment : Fragment() {
     private val args: CameraFragmentArgs by navArgs()
@@ -102,10 +103,11 @@ class CameraFragment : Fragment() {
                 }
 
                 override fun onCaptureSuccess(image: ImageProxy) {
-                    photoViewModel.apply {
-                        photo = image
-                        latitude = args.latlong.latitude
-                        longitude = args.latlong.longitude
+                    photoViewModel.also {
+                        it.image = image
+                        it.latitude = args.latlong.latitude
+                        it.longitude = args.latlong.longitude
+                        it.date = Date()
                     }
                     findNavController().navigate(R.id.action_camera_to_photo)
                 }
