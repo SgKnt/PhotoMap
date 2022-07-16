@@ -13,9 +13,6 @@ interface PhotoDao {
     @Insert
     fun insert(photo: Photo): Long
 
-    @Insert
-    fun insertAll(photos: List<Photo>)
-
     @Delete
     fun delete(photo: Photo)
 }

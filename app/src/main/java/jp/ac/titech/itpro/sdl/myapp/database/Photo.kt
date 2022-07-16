@@ -7,14 +7,12 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 @Entity
-class Photo(id: Int, photoURI: String, latitude: Float, longitude: Float, date: Date) {
+data class Photo(
     @PrimaryKey(autoGenerate = true)
-    var id: Int = id
-
+    val id: Long,
     @ColumnInfo(name = "photo_uri")
-    var photoURI: String = photoURI
-
-    var latitude: Float = latitude
-    var longitude: Float = longitude
-    var date: Date = date
-}
+    val photoURI: String,
+    val latitude: Double,
+    val longitude: Double,
+    val date: Date
+)

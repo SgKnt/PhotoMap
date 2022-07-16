@@ -13,8 +13,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -22,14 +20,17 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import jp.ac.titech.itpro.sdl.myapp.database.AppDatabase
 import jp.ac.titech.itpro.sdl.myapp.databinding.FragmentMapBinding
 import java.io.Serializable
+import kotlin.concurrent.thread
 
 class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var fragmentCameraBinding: FragmentMapBinding
     private lateinit var map: GoogleMap
     private lateinit var locationClient: FusedLocationProviderClient
     private lateinit var locationUpdateCallback: LocationCallback
+    private lateinit var appDatabase: AppDatabase
     private var latlng: LatLng? = null
 
     override fun onCreateView(
@@ -67,6 +68,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val longitude = ll.longitude
             val action = MapFragmentDirections.actionMapToCamera(LatLong(latitude, longitude))
             it.findNavController().navigate(action)
+        }
+
+        appDatabase = AppDatabase.getInstance(requireContext())
+        thread {
+            val photoDao = appDatabase.photoDao()
+            val photos = photoDao.all
+            for (photo in photos) {
+                Log.d(TAG, "id = ${photo.id}, uri = ${photo.photoURI}, latitude = ${photo.latitude}, longitude = ${photo.longitude}, date = ${photo.date}")
+            }
         }
     }
 
