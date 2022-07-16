@@ -20,6 +20,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import jp.ac.titech.itpro.sdl.myapp.database.AppDatabase
 import jp.ac.titech.itpro.sdl.myapp.databinding.FragmentMapBinding
 import java.io.Serializable
@@ -32,6 +33,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationUpdateCallback: LocationCallback
     private lateinit var appDatabase: AppDatabase
     private var latlng: LatLng? = null
+
+    inner class PhotoInfoWindowAdaptor : GoogleMap.InfoWindowAdapter {
+        override fun getInfoWindow(p0: Marker): View? {
+            TODO("Not yet implemented")
+        }
+
+        override fun getInfoContents(p0: Marker): View? {
+            TODO("Not yet implemented")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -82,8 +93,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-        startLocationUpdate()
-        Handler(Looper.getMainLooper()).postDelayed({ setLocation() }, 3000)
+        if (latlng == null) {
+            startLocationUpdate()
+        } else {
+            Handler(Looper.getMainLooper()).postDelayed({ setLocation() }, 3000)
+        }
     }
 
     override fun onPause() {
@@ -93,7 +107,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        map.moveCamera(CameraUpdateFactory.zoomTo(15f))
+        with(map) {
+            setInfoWindowAdapter(PhotoInfoWindowAdaptor())
+            moveCamera(CameraUpdateFactory.zoomTo(15f))
+        }
     }
 
     private fun startLocationUpdate() {
