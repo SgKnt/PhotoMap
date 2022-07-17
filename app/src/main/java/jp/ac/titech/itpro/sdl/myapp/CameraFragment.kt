@@ -104,8 +104,7 @@ class CameraFragment : Fragment() {
                 override fun onCaptureSuccess(image: ImageProxy) {
                     photoViewModel.also {
                         it.image = image
-                        it.latitude = args.latlong.latitude
-                        it.longitude = args.latlong.longitude
+                        it.latlng = args.mylatlng.v
                         it.date = Date()
                     }
                     findNavController().navigate(R.id.action_camera_to_photo)

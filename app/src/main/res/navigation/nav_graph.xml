@@ -17,8 +17,8 @@
             android:id="@+id/action_camera_to_map"
             app:destination="@id/mapFragment" />
         <argument
-            android:name="latlong"
-            app:argType="jp.ac.titech.itpro.sdl.myapp.LatLong"/>
+            android:name="mylatlng"
+            app:argType="jp.ac.titech.itpro.sdl.myapp.MyLatLng"/>
     </fragment>
     <fragment
         android:id="@+id/mapFragment"

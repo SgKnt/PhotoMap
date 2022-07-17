@@ -1,7 +1,11 @@
 package jp.ac.titech.itpro.sdl.myapp
 
 import android.Manifest
+import android.content.ContentValues
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,6 +14,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -21,10 +27,13 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import jp.ac.titech.itpro.sdl.myapp.database.AppDatabase
 import jp.ac.titech.itpro.sdl.myapp.databinding.FragmentMapBinding
 import java.io.Serializable
+import java.util.*
 import kotlin.concurrent.thread
+import kotlin.math.min
 
 class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var fragmentCameraBinding: FragmentMapBinding
@@ -32,15 +41,36 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationClient: FusedLocationProviderClient
     private lateinit var locationUpdateCallback: LocationCallback
     private lateinit var appDatabase: AppDatabase
+    private lateinit var addMarkerHandler: Handler
+    private lateinit var window: View
     private var latlng: LatLng? = null
+    private val photoInfos: MutableMap<LatLng, PhotoInfo> = mutableMapOf()
 
     inner class PhotoInfoWindowAdaptor : GoogleMap.InfoWindowAdapter {
-        override fun getInfoWindow(p0: Marker): View? {
-            TODO("Not yet implemented")
+        private val IMAGE_SIZE: Double = 300.0
+        override fun getInfoWindow(marker: Marker): View? {
+            val pi = photoInfos[marker.position] ?: return null
+            val uri = pi.uri
+            val date = pi.date
+            lateinit var bitmap: Bitmap
+            val resolver = requireActivity().contentResolver
+            resolver.openFileDescriptor(Uri.parse(uri), "r")?.use {
+                bitmap = BitmapFactory.decodeFileDescriptor(it.fileDescriptor)
+            }
+            val scale = min(IMAGE_SIZE / bitmap.width, IMAGE_SIZE / bitmap.height)
+            bitmap = Bitmap.createScaledBitmap(
+                bitmap,
+                (bitmap.width * scale).toInt(),
+                (bitmap.height * scale).toInt(),
+                true
+            )
+            window.findViewById<ImageView>(R.id.photo_window_image).setImageBitmap(bitmap)
+            window.findViewById<TextView>(R.id.photo_window_date).text = date.toString()
+            return window
         }
 
         override fun getInfoContents(p0: Marker): View? {
-            TODO("Not yet implemented")
+            return null
         }
     }
 
@@ -51,6 +81,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     ): View {
         Log.d(TAG, "On Create View")
         fragmentCameraBinding = FragmentMapBinding.inflate(inflater, container, false)
+        window = inflater.inflate(R.layout.photo_info_window, null)
         return fragmentCameraBinding.root
     }
 
@@ -58,7 +89,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "On View Created")
 
+        appDatabase = AppDatabase.getInstance(requireContext())
+
         // Map
+        addMarkerHandler = Handler(Looper.getMainLooper())
         val mapFragment = childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
@@ -75,29 +109,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         // Camera
         fragmentCameraBinding.cameraButton.setOnClickListener cameraButtonAction@{
             val ll = latlng ?: return@cameraButtonAction
-            val latitude = ll.latitude
-            val longitude = ll.longitude
-            val action = MapFragmentDirections.actionMapToCamera(LatLong(latitude, longitude))
+            val action = MapFragmentDirections.actionMapToCamera(MyLatLng(ll))
             it.findNavController().navigate(action)
-        }
-
-        appDatabase = AppDatabase.getInstance(requireContext())
-        thread {
-            val photoDao = appDatabase.photoDao()
-            val photos = photoDao.all
-            for (photo in photos) {
-                Log.d(TAG, "id = ${photo.id}, uri = ${photo.photoURI}, latitude = ${photo.latitude}, longitude = ${photo.longitude}, date = ${photo.date}")
-            }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        if (latlng == null) {
-            startLocationUpdate()
-        } else {
-            Handler(Looper.getMainLooper()).postDelayed({ setLocation() }, 3000)
-        }
+        startLocationUpdate()
+        Handler(Looper.getMainLooper()).postDelayed({ setLocation() }, 3000)
+
     }
 
     override fun onPause() {
@@ -110,6 +131,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         with(map) {
             setInfoWindowAdapter(PhotoInfoWindowAdaptor())
             moveCamera(CameraUpdateFactory.zoomTo(15f))
+            thread {
+                val photoDao = appDatabase.photoDao()
+                val photos = photoDao.all
+                for (photo in photos) {
+                    val pi = PhotoInfo(photo.photoURI, LatLng(photo.latitude, photo.longitude), photo.date)
+                    photoInfos[pi.latlng] = pi
+                    addMarkerHandler.post{
+                        addMarker(MarkerOptions()
+                            .position(pi.latlng)
+                        )
+                    }
+                    Log.d(TAG, "id = ${photo.id}, uri = ${photo.photoURI}, latitude = ${photo.latitude}, longitude = ${photo.longitude}, date = ${photo.date}")
+                }
+            }
         }
     }
 
@@ -174,7 +209,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 }
 
-data class LatLong(
-    val latitude: Double,
-    val longitude: Double,
+data class PhotoInfo(
+    val uri: String,
+    val latlng: LatLng,
+    val date: Date,
+)
+
+// for navigation argument
+data class MyLatLng(
+    val v: LatLng
 ) : Serializable

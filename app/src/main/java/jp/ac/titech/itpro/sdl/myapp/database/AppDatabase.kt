@@ -5,6 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import jp.ac.titech.itpro.sdl.myapp.database.dao.PhotoDao
+import jp.ac.titech.itpro.sdl.myapp.database.entity.DateConverters
+import jp.ac.titech.itpro.sdl.myapp.database.entity.Photo
 
 @Database(entities = [Photo::class], version = 1)
 @TypeConverters(DateConverters::class)

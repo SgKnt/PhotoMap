@@ -14,10 +14,11 @@ import androidx.camera.core.ImageProxy
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import jp.ac.titech.itpro.sdl.myapp.database.AppDatabase
-import jp.ac.titech.itpro.sdl.myapp.database.Photo
+import jp.ac.titech.itpro.sdl.myapp.database.entity.Photo
 import jp.ac.titech.itpro.sdl.myapp.databinding.PhotoFragmentBinding
 import java.util.*
 import java.text.SimpleDateFormat
+import kotlin.Exception
 import kotlin.concurrent.thread
 
 class PhotoFragment : Fragment() {
@@ -39,17 +40,25 @@ class PhotoFragment : Fragment() {
         appDatabase = AppDatabase.getInstance(requireContext())
         backToMapHandler = Handler(Looper.getMainLooper())
 
-        val image = photoViewModel.image ?: return
-        val date = photoViewModel.date ?: return
+        val image = photoViewModel.image ?: run {
+            Log.e(TAG, "Null image", Exception())
+            return
+        }
+        val date = photoViewModel.date ?: run {
+            Log.e(TAG, "Null date", Exception())
+            return
+        }
+        val latlng = photoViewModel.latlng ?: run {
+            Log.e(TAG, "Null latlng", Exception())
+            return
+        }
 
        photoFragmentBinding.photo.setImageBitmap(imageProxyToBitmap(image))
 
         Handler(Looper.getMainLooper()).postDelayed({
             thread {
                 saveImage(image, date)?.let { uri ->
-                    val latitude = photoViewModel.latitude
-                    val longitude = photoViewModel.longitude
-                    insertPhotoToDB(uri, latitude, longitude, date)
+                    insertPhotoToDB(uri, latlng.latitude, latlng.longitude, date)
                 }
                 backToMapHandler.post {
                     findNavController().navigate(R.id.action_photo_to_map)

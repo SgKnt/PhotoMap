@@ -1,4 +1,4 @@
-package jp.ac.titech.itpro.sdl.myapp.database
+package jp.ac.titech.itpro.sdl.myapp.database.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
