@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">MyApp</string>
     <string name="camera_button_content_description">Camera</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="label_location">場所</string>
+    <string name="label_memo">メモ</string>
+    <string name="label_save_photo_button">保存</string>
 </resources>

@@ -14,5 +14,7 @@ data class Photo(
     val photoURI: String,
     val latitude: Double,
     val longitude: Double,
+    val locationName: String,
+    val memo: String,
     val date: Date
 )

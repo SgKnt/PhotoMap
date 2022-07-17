@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.camera.core.ImageProxy
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.maps.model.LatLng
 import jp.ac.titech.itpro.sdl.myapp.database.AppDatabase
 import jp.ac.titech.itpro.sdl.myapp.database.entity.Photo
 import jp.ac.titech.itpro.sdl.myapp.databinding.PhotoFragmentBinding
@@ -25,6 +26,9 @@ class PhotoFragment : Fragment() {
     private lateinit var photoFragmentBinding: PhotoFragmentBinding
     private val photoViewModel: PhotoViewModel by activityViewModels()
     private lateinit var appDatabase: AppDatabase
+    private lateinit var image: ImageProxy
+    private lateinit var latlng: LatLng
+    private lateinit var date: Date
     private lateinit var backToMapHandler: Handler
 
     override fun onCreateView(
@@ -40,31 +44,22 @@ class PhotoFragment : Fragment() {
         appDatabase = AppDatabase.getInstance(requireContext())
         backToMapHandler = Handler(Looper.getMainLooper())
 
-        val image = photoViewModel.image ?: run {
+        image = photoViewModel.image ?: run {
             Log.e(TAG, "Null image", Exception())
             return
         }
-        val date = photoViewModel.date ?: run {
+        date = photoViewModel.date ?: run {
             Log.e(TAG, "Null date", Exception())
             return
         }
-        val latlng = photoViewModel.latlng ?: run {
+        latlng = photoViewModel.latlng ?: run {
             Log.e(TAG, "Null latlng", Exception())
             return
         }
 
-       photoFragmentBinding.photo.setImageBitmap(imageProxyToBitmap(image))
+        photoFragmentBinding.photoInput.setImageBitmap(imageProxyToBitmap(image))
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            thread {
-                saveImage(image, date)?.let { uri ->
-                    insertPhotoToDB(uri, latlng.latitude, latlng.longitude, date)
-                }
-                backToMapHandler.post {
-                    findNavController().navigate(R.id.action_photo_to_map)
-                }
-            }
-        }, 3000)
+        photoFragmentBinding.savePhotoButton.setOnClickListener{ savePhoto() }
     }
 
     private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
@@ -73,6 +68,19 @@ class PhotoFragment : Fragment() {
         val bytes = ByteArray(buffer.remaining())
         buffer.get(bytes)
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    }
+
+    private fun savePhoto() {
+        thread {
+            saveImage(image, date)?.let { uri ->
+                val location = photoFragmentBinding.locationInput.text.toString()
+                val memo = photoFragmentBinding.memoInput.text.toString()
+                insertPhotoToDB(uri, latlng.latitude, latlng.longitude, location, memo, date)
+            }
+            backToMapHandler.post {
+                findNavController().navigate(R.id.action_photo_to_map)
+            }
+        }
     }
 
     /**
@@ -119,9 +127,9 @@ class PhotoFragment : Fragment() {
         return uri.toString()
     }
 
-    private fun insertPhotoToDB(uri: String, lat: Double, lng: Double, date: Date) {
+    private fun insertPhotoToDB(uri: String, lat: Double, lng: Double, location: String, memo: String, date: Date) {
         val photoDao = appDatabase.photoDao()
-        val photo = Photo(0, uri, lat, lng, date)
+        val photo = Photo(0, uri, lat, lng, location, memo, date)
         photoDao.insert(photo)
     }
 

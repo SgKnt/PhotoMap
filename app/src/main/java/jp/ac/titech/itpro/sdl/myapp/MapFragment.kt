@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,36 +43,46 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationUpdateCallback: LocationCallback
     private lateinit var appDatabase: AppDatabase
     private lateinit var addMarkerHandler: Handler
-    private lateinit var window: View
+    private lateinit var window: ViewGroup
     private var latlng: LatLng? = null
     private val photoInfos: MutableMap<LatLng, PhotoInfo> = mutableMapOf()
 
     inner class PhotoInfoWindowAdaptor : GoogleMap.InfoWindowAdapter {
-        private val IMAGE_SIZE: Double = 300.0
+        private val ImageSize: Double = 300.0
         override fun getInfoWindow(marker: Marker): View? {
+            val elem = requireActivity().layoutInflater.inflate(R.layout.photo_info_element, null)
+
             val pi = photoInfos[marker.position] ?: return null
             val uri = pi.uri
             val date = pi.date
+
             lateinit var bitmap: Bitmap
             val resolver = requireActivity().contentResolver
             resolver.openFileDescriptor(Uri.parse(uri), "r")?.use {
                 bitmap = BitmapFactory.decodeFileDescriptor(it.fileDescriptor)
             }
-            val scale = min(IMAGE_SIZE / bitmap.width, IMAGE_SIZE / bitmap.height)
+            val scale = min(ImageSize / bitmap.width, ImageSize / bitmap.height)
             bitmap = Bitmap.createScaledBitmap(
                 bitmap,
                 (bitmap.width * scale).toInt(),
                 (bitmap.height * scale).toInt(),
                 true
             )
-            window.findViewById<ImageView>(R.id.photo_window_image).setImageBitmap(bitmap)
-            window.findViewById<TextView>(R.id.photo_window_date).text = date.toString()
+
+            elem.findViewById<ImageView>(R.id.photo_window_image).setImageBitmap(bitmap)
+            elem.findViewById<TextView>(R.id.photo_window_date).text = date.toString()
+            window.addView(elem)
             return window
         }
 
         override fun getInfoContents(p0: Marker): View? {
             return null
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requestLocationPermissions()
     }
 
     override fun onCreateView(
@@ -81,7 +92,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     ): View {
         Log.d(TAG, "On Create View")
         fragmentCameraBinding = FragmentMapBinding.inflate(inflater, container, false)
-        window = inflater.inflate(R.layout.photo_info_window, null)
+        window = inflater.inflate(R.layout.photo_info_window, null) as LinearLayout
         return fragmentCameraBinding.root
     }
 
@@ -135,7 +146,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 val photoDao = appDatabase.photoDao()
                 val photos = photoDao.all
                 for (photo in photos) {
-                    val pi = PhotoInfo(photo.photoURI, LatLng(photo.latitude, photo.longitude), photo.date)
+                    val pi = PhotoInfo(photo.photoURI, LatLng(photo.latitude, photo.longitude), photo.locationName, photo.memo, photo.date)
                     photoInfos[pi.latlng] = pi
                     addMarkerHandler.post{
                         addMarker(MarkerOptions()
@@ -199,8 +210,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     companion object {
-        @JvmStatic
-        fun newInstance() = CameraFragment()
         private val REQUIRED_PERMISSIONS = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -212,6 +221,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 data class PhotoInfo(
     val uri: String,
     val latlng: LatLng,
+    val locationName: String?,
+    val memo: String?,
     val date: Date,
 )
 
