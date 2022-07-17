@@ -16,14 +16,14 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.model.LatLng
 import jp.ac.titech.itpro.sdl.myapp.database.AppDatabase
 import jp.ac.titech.itpro.sdl.myapp.database.entity.Photo
-import jp.ac.titech.itpro.sdl.myapp.databinding.PhotoFragmentBinding
+import jp.ac.titech.itpro.sdl.myapp.databinding.FragmentPhotoBinding
 import java.util.*
 import java.text.SimpleDateFormat
 import kotlin.Exception
 import kotlin.concurrent.thread
 
 class PhotoFragment : Fragment() {
-    private lateinit var photoFragmentBinding: PhotoFragmentBinding
+    private lateinit var photoFragmentBinding: FragmentPhotoBinding
     private val photoViewModel: PhotoViewModel by activityViewModels()
     private lateinit var appDatabase: AppDatabase
     private lateinit var image: ImageProxy
@@ -36,7 +36,7 @@ class PhotoFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        photoFragmentBinding = PhotoFragmentBinding.inflate(inflater, container, false)
+        photoFragmentBinding = FragmentPhotoBinding.inflate(inflater, container, false)
         return photoFragmentBinding.root
     }
 

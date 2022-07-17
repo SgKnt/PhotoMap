@@ -32,7 +32,7 @@
         android:id="@+id/photoFragment"
         android:name="jp.ac.titech.itpro.sdl.myapp.PhotoFragment"
         android:label="photo_fragment"
-        tools:layout="@layout/photo_fragment" >
+        tools:layout="@layout/fragment_photo" >
         <action
             android:id="@+id/action_photo_to_map"
             app:destination="@id/mapFragment" />
