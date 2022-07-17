@@ -143,8 +143,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
     override fun onResume() {
         super.onResume()
         startLocationUpdate()
-        Handler(Looper.getMainLooper()).postDelayed({ setLocation() }, 3000)
-
+        setLocation()
     }
 
     override fun onPause() {
@@ -209,7 +208,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
     private fun setLocation() {
         latlng?.let {
             map.moveCamera(CameraUpdateFactory.newLatLng(it))
-        }
+        } ?: Handler(Looper.getMainLooper()).postDelayed({setLocation()}, 100)
     }
 
     private fun requestLocationPermissions() {
