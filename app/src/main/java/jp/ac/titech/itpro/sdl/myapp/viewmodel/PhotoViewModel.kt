@@ -1,4 +1,4 @@
-package jp.ac.titech.itpro.sdl.myapp
+package jp.ac.titech.itpro.sdl.myapp.viewmodel
 
 import androidx.camera.core.ImageProxy
 import androidx.lifecycle.ViewModel
