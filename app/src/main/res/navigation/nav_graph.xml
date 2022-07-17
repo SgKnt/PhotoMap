@@ -22,19 +22,19 @@
     </fragment>
     <fragment
         android:id="@+id/mapFragment"
-        android:name="jp.ac.titech.itpro.sdl.myapp.MapFragment"
+        android:name="jp.ac.titech.itpro.sdl.myapp.fragment.MapFragment"
         android:label="MapFragment" >
         <action
             android:id="@+id/action_map_to_camera"
             app:destination="@id/cameraFragment" />
         <action
-            android:id="@+id/action_mapFragment_to_photoDetailFragment"
+            android:id="@+id/action_map_to_photoDetail"
             app:destination="@id/photoDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/photoFragment"
         android:name="jp.ac.titech.itpro.sdl.myapp.fragment.PhotoFragment"
-        android:label="photo_fragment"
+        android:label="fragment_photo"
         tools:layout="@layout/fragment_photo" >
         <action
             android:id="@+id/action_photo_to_map"
