@@ -5,14 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import jp.ac.titech.itpro.sdl.myapp.database.dao.PhotoDao
-import jp.ac.titech.itpro.sdl.myapp.database.entity.DateConverters
-import jp.ac.titech.itpro.sdl.myapp.database.entity.Photo
+import jp.ac.titech.itpro.sdl.myapp.database.dao.*
+import jp.ac.titech.itpro.sdl.myapp.database.entity.*
 
-@Database(entities = [Photo::class], version = 1)
+@Database(entities = [Photo::class, Location::class], version = 1)
 @TypeConverters(DateConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun photoDao(): PhotoDao
+    abstract fun locationDao(): LocationDao
 
     companion object {
         private var db: AppDatabase? = null

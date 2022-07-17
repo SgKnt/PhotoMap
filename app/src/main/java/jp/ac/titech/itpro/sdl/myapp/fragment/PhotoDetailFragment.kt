@@ -39,12 +39,12 @@ class PhotoDetailFragment : Fragment() {
 
         photoDetailFragmentBinding.detailLocation.text =
             if (location.isNullOrEmpty()) {
-                latlng.toString()
+                "緯度: ${latlng?.latitude}, 経度: ${latlng?.longitude}"
             } else {
                 location
             }
         photos?.let {
-            for (photo in it) {
+            it.forEach{ photo ->
                 Log.d(TAG, "Add view")
                 val elem = requireActivity().layoutInflater.inflate(R.layout.photo_detail_element, null)
                 elem.findViewById<ImageView>(R.id.photo_detail_image).setImageBitmap(photo.image)

@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import jp.ac.titech.itpro.sdl.myapp.database.AppDatabase
 import jp.ac.titech.itpro.sdl.myapp.databinding.FragmentMapBinding
 import jp.ac.titech.itpro.sdl.myapp.R
+import jp.ac.titech.itpro.sdl.myapp.database.entity.Photo as PhotoInfo
 import jp.ac.titech.itpro.sdl.myapp.viewmodel.PhotoDetail
 import jp.ac.titech.itpro.sdl.myapp.viewmodel.PhotoDetailViewModel
 import java.io.Serializable
@@ -51,42 +52,48 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
     private lateinit var window: ViewGroup
     private val photoDetailViewModel: PhotoDetailViewModel by activityViewModels()
     private var latlng: LatLng? = null
-    private val photoInfoMap: MutableMap<LatLng, PhotoInfo> = mutableMapOf()
-    private var displayingImage: Bitmap? = null
+    private val locationMap: MutableMap<Long, LocationInfo> = mutableMapOf()
+    private val photoInfoMap: MutableMap<Long, MutableList<PhotoInfo>> = mutableMapOf()
+    private var displayingImageMap: MutableMap<Long, Bitmap> = mutableMapOf()
 
     inner class PhotoInfoWindowAdaptor : GoogleMap.InfoWindowAdapter {
         private val imageSize: Double = 300.0
         override fun getInfoWindow(marker: Marker): View? {
             val elems = window.findViewById<LinearLayout>(R.id.photo_window_elements)
             elems.removeAllViews()
-            val elem = requireActivity().layoutInflater.inflate(R.layout.photo_info_element, null)
+            displayingImageMap.clear()
 
-            val pi = photoInfoMap[marker.position] ?: return null
-            val uri = pi.uri
-            val location =
-                if (pi.locationName.isNullOrEmpty()) {
-                    marker.position.toString()
-                } else {
-                    pi.locationName
+            val photoInfoList = photoInfoMap[marker.tag] ?: return null
+            photoInfoList.forEach{photoInfo ->
+                val elem = requireActivity().layoutInflater.inflate(R.layout.photo_info_element, null)
+
+                val uri = photoInfo.photoURI
+                lateinit var bitmap: Bitmap
+                val resolver = requireActivity().contentResolver
+                resolver.openFileDescriptor(Uri.parse(uri), "r")?.use {
+                    bitmap = BitmapFactory.decodeFileDescriptor(it.fileDescriptor)
+                    displayingImageMap[photoInfo.id] = bitmap
                 }
-
-            lateinit var bitmap: Bitmap
-            val resolver = requireActivity().contentResolver
-            resolver.openFileDescriptor(Uri.parse(uri), "r")?.use {
-                bitmap = BitmapFactory.decodeFileDescriptor(it.fileDescriptor)
-                displayingImage = bitmap
+                val scale = min(imageSize / bitmap.width, imageSize / bitmap.height)
+                bitmap = Bitmap.createScaledBitmap(
+                    bitmap,
+                    (bitmap.width * scale).toInt(),
+                    (bitmap.height * scale).toInt(),
+                    true
+                )
+                elem.findViewById<ImageView>(R.id.photo_window_image).setImageBitmap(bitmap)
+                elems.addView(elem)
             }
-            val scale = min(imageSize / bitmap.width, imageSize / bitmap.height)
-            bitmap = Bitmap.createScaledBitmap(
-                bitmap,
-                (bitmap.width * scale).toInt(),
-                (bitmap.height * scale).toInt(),
-                true
-            )
-            elem.findViewById<ImageView>(R.id.photo_window_image).setImageBitmap(bitmap)
+
+            val location = locationMap[marker.tag]!!.let {
+                if (it.name.isNullOrEmpty()) {
+                    "緯度: ${it.latlng.latitude}, 経度: ${it.latlng.longitude}"
+                } else {
+                    it.name
+                }
+            }
 
             window.findViewById<TextView>(R.id.photo_window_location).text = location
-            elems.addView(elem)
             return window
         }
 
@@ -159,16 +166,23 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
             moveCamera(CameraUpdateFactory.zoomTo(15f))
             thread {
                 val photoDao = appDatabase.photoDao()
+                val locationDao = appDatabase.locationDao()
+                val locations = locationDao.all
                 val photos = photoDao.all
-                for (photo in photos) {
-                    val pi = PhotoInfo(photo.photoURI, LatLng(photo.latitude, photo.longitude), photo.locationName, photo.memo, photo.date)
-                    photoInfoMap[pi.latlng] = pi
+                locations.forEach{
+                    val latlng = LatLng(it.latitude, it.longitude)
+                    val name = it.name
+                    locationMap[it.id] = LocationInfo(latlng, name)
                     addMarkerHandler.post{
                         addMarker(MarkerOptions()
-                            .position(pi.latlng)
-                        )
+                            .position(latlng)
+                        )?.setTag(it.id)
                     }
-                    Log.d(TAG, "id = ${photo.id}, uri = ${photo.photoURI}, latitude = ${photo.latitude}, longitude = ${photo.longitude}, date = ${photo.date}")
+                }
+                photos.forEach{photo ->
+                    photoInfoMap[photo.locationId]?.add(photo) ?: run {
+                        photoInfoMap[photo.locationId] = mutableListOf(photo)
+                    }
                 }
             }
         }
@@ -176,12 +190,15 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
 
     override fun onInfoWindowClick(marker: Marker) {
         Log.d(TAG, "onInfoWindowClick")
-        val photoInfo = photoInfoMap[marker.position] ?: return
-        val photoDetail = PhotoDetail(displayingImage!!, photoInfo.date, photoInfo.memo)
+        val photoInfoList = photoInfoMap[marker.tag] ?: return
+        val location = locationMap[marker.tag] ?: return
+        val photoDetails = photoInfoList.map{
+            PhotoDetail(displayingImageMap[it.id]!!, it.date, it.memo)
+        }
         photoDetailViewModel.apply {
             latLng = marker.position
-            location = photoInfo.locationName
-            photos = listOf(photoDetail)
+            this.location = location.name
+            photos = photoDetails
         }
         Log.d(TAG, "map to photo")
         findNavController().navigate(R.id.action_map_to_photoDetail)
@@ -246,12 +263,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
     }
 }
 
-data class PhotoInfo(
-    val uri: String,
+data class LocationInfo(
     val latlng: LatLng,
-    val locationName: String?,
-    val memo: String?,
-    val date: Date,
+    val name: String?
 )
 
 // for navigation argument

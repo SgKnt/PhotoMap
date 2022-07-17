@@ -17,6 +17,7 @@ import com.google.android.gms.maps.model.LatLng
 import jp.ac.titech.itpro.sdl.myapp.viewmodel.PhotoViewModel
 import jp.ac.titech.itpro.sdl.myapp.R
 import jp.ac.titech.itpro.sdl.myapp.database.AppDatabase
+import jp.ac.titech.itpro.sdl.myapp.database.entity.Location
 import jp.ac.titech.itpro.sdl.myapp.database.entity.Photo
 import jp.ac.titech.itpro.sdl.myapp.databinding.FragmentPhotoBinding
 import java.util.*
@@ -130,9 +131,21 @@ class PhotoFragment : Fragment() {
     }
 
     private fun insertPhotoToDB(uri: String, lat: Double, lng: Double, location: String, memo: String, date: Date) {
+        val locationDao = appDatabase.locationDao()
         val photoDao = appDatabase.photoDao()
-        val photo = Photo(0, uri, lat, lng, location, memo, date)
-        photoDao.insert(photo)
+        val locationName =
+            if (location.isNullOrEmpty()) {
+                null
+            } else {
+                location
+            }
+
+        appDatabase.runInTransaction {
+            val location = Location(0, lat, lng, locationName)
+            val locationId = locationDao.insert(location)
+            val photo = Photo(0, uri, locationId, memo, date)
+            photoDao.insert(photo)
+        }
     }
 
     private fun makeImageName(date: Date) : String {

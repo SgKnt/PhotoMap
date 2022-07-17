@@ -12,9 +12,7 @@ data class Photo(
     val id: Long,
     @ColumnInfo(name = "photo_uri")
     val photoURI: String,
-    val latitude: Double,
-    val longitude: Double,
-    val locationName: String,
+    val locationId: Long,
     val memo: String,
     val date: Date
 )
