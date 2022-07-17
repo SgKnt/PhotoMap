@@ -5,13 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/photo_detail_image_right_side"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.8"/>
+
     <ImageView
         android:id="@+id/photo_detail_image"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="@id/photo_detail_image_right_side"/>
+
     <TextView
         android:id="@+id/label_detail_date"
         android:layout_width="@dimen/label_width"
@@ -32,29 +41,7 @@
         app:layout_constraintTop_toBottomOf="@id/photo_detail_image"
         app:layout_constraintStart_toEndOf="@id/label_detail_date"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/detail_location"/>
-
-    <TextView
-        android:id="@+id/label_detail_location"
-        android:layout_width="@dimen/label_width"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/font_size"
-        android:text="@string/label_location"
-        app:layout_constraintTop_toTopOf="@id/detail_location"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/detail_location"/>
-    <TextView
-        android:id="@+id/detail_location"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/font_size"
-        android:text="なし"
-        android:layout_marginStart="@dimen/margin_start"
-        android:layout_marginTop="@dimen/margin_top_bottom"
-        app:layout_constraintTop_toBottomOf="@id/detail_date"
-        app:layout_constraintStart_toEndOf="@id/label_detail_location"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/detail_memo"/>
+        app:layout_constraintBottom_toTopOf="@id/detail_date"/>
 
     <TextView
         android:id="@+id/label_detail_memo"
@@ -70,14 +57,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="@dimen/font_size"
-        android:text="なし"
+        android:text=""
         android:lines="3"
         android:layout_marginStart="@dimen/margin_start"
         android:layout_marginTop="@dimen/margin_top_bottom"
-        app:layout_constraintTop_toBottomOf="@id/detail_location"
+        app:layout_constraintTop_toBottomOf="@id/detail_date"
         app:layout_constraintStart_toEndOf="@id/label_detail_memo"
         app:layout_constraintEnd_toEndOf="parent"/>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
