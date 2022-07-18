@@ -39,7 +39,7 @@ class PhotoDetailFragment : Fragment() {
 
         photoDetailFragmentBinding.detailLocation.text =
             if (location.isNullOrEmpty()) {
-                "緯度: ${latlng?.latitude}, 経度: ${latlng?.longitude}"
+                "lat: ${latlng?.latitude}, lng: ${latlng?.longitude}"
             } else {
                 location
             }
@@ -49,7 +49,7 @@ class PhotoDetailFragment : Fragment() {
                 val elem = requireActivity().layoutInflater.inflate(R.layout.photo_detail_element, null)
                 elem.findViewById<ImageView>(R.id.photo_detail_image).setImageBitmap(photo.image)
                 elem.findViewById<TextView>(R.id.detail_date).text = sdf.format(photo.date)
-                if (photo.memo.isNullOrEmpty()) {
+                if (!photo.memo.isNullOrEmpty()) {
                     elem.findViewById<TextView>(R.id.detail_memo).text = photo.memo
                 }
                 photosFrame.addView(elem)

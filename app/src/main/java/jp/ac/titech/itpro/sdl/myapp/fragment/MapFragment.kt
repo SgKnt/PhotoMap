@@ -38,7 +38,6 @@ import jp.ac.titech.itpro.sdl.myapp.database.entity.Photo as PhotoInfo
 import jp.ac.titech.itpro.sdl.myapp.viewmodel.PhotoDetail
 import jp.ac.titech.itpro.sdl.myapp.viewmodel.PhotoDetailViewModel
 import java.io.Serializable
-import java.util.*
 import kotlin.concurrent.thread
 import kotlin.math.min
 
@@ -48,7 +47,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
     private lateinit var locationClient: FusedLocationProviderClient
     private lateinit var locationUpdateCallback: LocationCallback
     private lateinit var appDatabase: AppDatabase
-    private lateinit var addMarkerHandler: Handler
+    private lateinit var handler: Handler
     private lateinit var window: ViewGroup
     private val photoDetailViewModel: PhotoDetailViewModel by activityViewModels()
     private var latlng: LatLng? = null
@@ -87,7 +86,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
 
             val location = locationMap[marker.tag]!!.let {
                 if (it.name.isNullOrEmpty()) {
-                    "緯度: ${it.latlng.latitude}, 経度: ${it.latlng.longitude}"
+                    "lat: ${it.latlng.latitude}, lng: ${it.latlng.longitude}"
                 } else {
                     it.name
                 }
@@ -125,7 +124,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
         appDatabase = AppDatabase.getInstance(requireContext())
 
         // Map
-        addMarkerHandler = Handler(Looper.getMainLooper())
+        handler = Handler(Looper.getMainLooper())
         val mapFragment = childFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
@@ -173,7 +172,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
                     val latlng = LatLng(it.latitude, it.longitude)
                     val name = it.name
                     locationMap[it.id] = LocationInfo(latlng, name)
-                    addMarkerHandler.post{
+                    handler.post{
                         addMarker(MarkerOptions()
                             .position(latlng)
                         )?.setTag(it.id)
@@ -193,6 +192,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
         val photoInfoList = photoInfoMap[marker.tag] ?: return
         val location = locationMap[marker.tag] ?: return
         val photoDetails = photoInfoList.map{
+            Log.d(TAG, "memo = ${it.memo}")
             PhotoDetail(displayingImageMap[it.id]!!, it.date, it.memo)
         }
         photoDetailViewModel.apply {

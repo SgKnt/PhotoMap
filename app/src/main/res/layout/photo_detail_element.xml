@@ -50,14 +50,13 @@
         android:textSize="@dimen/font_size"
         android:text="@string/label_memo"
         app:layout_constraintTop_toTopOf="@id/detail_memo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/detail_memo"/>
+        app:layout_constraintStart_toStartOf="parent"/>
     <TextView
         android:id="@+id/detail_memo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="@dimen/font_size"
-        android:text=""
+        android:text="memo"
         android:lines="3"
         android:layout_marginStart="@dimen/margin_start"
         android:layout_marginTop="@dimen/margin_top_bottom"
