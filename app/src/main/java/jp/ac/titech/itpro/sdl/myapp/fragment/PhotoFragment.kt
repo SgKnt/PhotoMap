@@ -80,6 +80,7 @@ class PhotoFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
+        ;
     }
 
     private fun addAdapterToSpinner() {
@@ -200,14 +201,6 @@ class PhotoFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun changeEditTextAvailability(text: EditText, isEditable: Boolean) {
-        /*
-        if (isEditable) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                text.focusable = EditText.FOCUSABLE
-            } else
-            text.isEnabled = false
-        }
-         */
         text.isEnabled = isEditable
     }
 

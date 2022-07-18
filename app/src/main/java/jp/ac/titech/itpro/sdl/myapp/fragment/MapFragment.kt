@@ -51,9 +51,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
     private lateinit var window: ViewGroup
     private val photoDetailViewModel: PhotoDetailViewModel by activityViewModels()
     private var latlng: LatLng? = null
-    private val locationMap: MutableMap<Long, LocationInfo> = mutableMapOf()
-    private val photoInfoMap: MutableMap<Long, MutableList<PhotoInfo>> = mutableMapOf()
-    private var displayingImageMap: MutableMap<Long, Bitmap> = mutableMapOf()
+    private lateinit var locationMap: MutableMap<Long, LocationInfo>
+    private lateinit var photoInfoMap: MutableMap<Long, MutableList<PhotoInfo>>
+    private lateinit var displayingImageMap: MutableMap<Long, Bitmap>
 
     inner class PhotoInfoWindowAdaptor : GoogleMap.InfoWindowAdapter {
         private val imageSize: Double = 300.0
@@ -122,6 +122,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
         Log.d(TAG, "On View Created")
 
         appDatabase = AppDatabase.getInstance(requireContext())
+        locationMap = mutableMapOf()
+        photoInfoMap = mutableMapOf()
+        displayingImageMap = mutableMapOf()
 
         // Map
         handler = Handler(Looper.getMainLooper())
