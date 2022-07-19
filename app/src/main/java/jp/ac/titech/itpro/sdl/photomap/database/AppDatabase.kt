@@ -1,12 +1,12 @@
-package jp.ac.titech.itpro.sdl.myapp.database
+package jp.ac.titech.itpro.sdl.photomap.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import jp.ac.titech.itpro.sdl.myapp.database.dao.*
-import jp.ac.titech.itpro.sdl.myapp.database.entity.*
+import jp.ac.titech.itpro.sdl.photomap.database.dao.*
+import jp.ac.titech.itpro.sdl.photomap.database.entity.*
 
 @Database(entities = [Photo::class, Location::class], version = 1)
 @TypeConverters(DateConverters::class)

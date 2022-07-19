@@ -1,9 +1,9 @@
-package jp.ac.titech.itpro.sdl.myapp
+package jp.ac.titech.itpro.sdl.photomap
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import jp.ac.titech.itpro.sdl.myapp.databinding.ActivityMainBinding
+import jp.ac.titech.itpro.sdl.photomap.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding

@@ -1,10 +1,10 @@
-package jp.ac.titech.itpro.sdl.myapp.database.dao
+package jp.ac.titech.itpro.sdl.photomap.database.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import jp.ac.titech.itpro.sdl.myapp.database.entity.Photo
+import jp.ac.titech.itpro.sdl.photomap.database.entity.Photo
 
 @Dao
 interface PhotoDao {

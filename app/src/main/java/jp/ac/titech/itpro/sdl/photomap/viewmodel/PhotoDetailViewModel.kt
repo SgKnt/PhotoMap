@@ -1,4 +1,4 @@
-package jp.ac.titech.itpro.sdl.myapp.viewmodel
+package jp.ac.titech.itpro.sdl.photomap.viewmodel
 
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel

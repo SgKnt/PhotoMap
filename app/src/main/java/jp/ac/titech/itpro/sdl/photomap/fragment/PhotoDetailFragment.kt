@@ -1,4 +1,4 @@
-package jp.ac.titech.itpro.sdl.myapp.fragment
+package jp.ac.titech.itpro.sdl.photomap.fragment
 
 import android.os.Bundle
 import android.util.Log
@@ -9,9 +9,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import jp.ac.titech.itpro.sdl.myapp.R
-import jp.ac.titech.itpro.sdl.myapp.databinding.FragmentPhotoDetailBinding
-import jp.ac.titech.itpro.sdl.myapp.viewmodel.PhotoDetailViewModel
+import jp.ac.titech.itpro.sdl.photomap.R
+import jp.ac.titech.itpro.sdl.photomap.databinding.FragmentPhotoDetailBinding
+import jp.ac.titech.itpro.sdl.photomap.viewmodel.PhotoDetailViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 

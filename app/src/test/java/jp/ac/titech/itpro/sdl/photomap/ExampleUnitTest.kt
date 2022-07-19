@@ -1,4 +1,4 @@
-package jp.ac.titech.itpro.sdl.myapp
+package jp.ac.titech.itpro.sdl.photomap
 
 import org.junit.Test
 

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/cameraFragment"
-        android:name="jp.ac.titech.itpro.sdl.myapp.fragment.CameraFragment"
+        android:name="jp.ac.titech.itpro.sdl.photomap.fragment.CameraFragment"
         android:label="fragment_camera"
         tools:layout="@layout/fragment_camera" >
         <action
@@ -18,11 +18,11 @@
             app:destination="@id/mapFragment" />
         <argument
             android:name="mylatlng"
-            app:argType="jp.ac.titech.itpro.sdl.myapp.fragment.MyLatLng"/>
+            app:argType="jp.ac.titech.itpro.sdl.photomap.fragment.MyLatLng"/>
     </fragment>
     <fragment
         android:id="@+id/mapFragment"
-        android:name="jp.ac.titech.itpro.sdl.myapp.fragment.MapFragment"
+        android:name="jp.ac.titech.itpro.sdl.photomap.fragment.MapFragment"
         android:label="MapFragment" >
         <action
             android:id="@+id/action_map_to_camera"
@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/photoFragment"
-        android:name="jp.ac.titech.itpro.sdl.myapp.fragment.PhotoFragment"
+        android:name="jp.ac.titech.itpro.sdl.photomap.fragment.PhotoFragment"
         android:label="fragment_photo"
         tools:layout="@layout/fragment_photo" >
         <action
@@ -42,7 +42,7 @@
     </fragment>
     <fragment
         android:id="@+id/photoDetailFragment"
-        android:name="jp.ac.titech.itpro.sdl.myapp.fragment.PhotoDetailFragment"
+        android:name="jp.ac.titech.itpro.sdl.photomap.fragment.PhotoDetailFragment"
         android:label="fragment_photo_detail"
         tools:layout="@layout/fragment_photo_detail" />
 </navigation>

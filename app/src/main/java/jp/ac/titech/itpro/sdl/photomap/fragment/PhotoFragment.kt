@@ -1,4 +1,4 @@
-package jp.ac.titech.itpro.sdl.myapp.fragment
+package jp.ac.titech.itpro.sdl.photomap.fragment
 
 import android.content.ContentValues
 import android.graphics.Bitmap
@@ -17,12 +17,12 @@ import androidx.camera.core.ImageProxy
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.model.LatLng
-import jp.ac.titech.itpro.sdl.myapp.viewmodel.PhotoViewModel
-import jp.ac.titech.itpro.sdl.myapp.R
-import jp.ac.titech.itpro.sdl.myapp.database.AppDatabase
-import jp.ac.titech.itpro.sdl.myapp.database.entity.Location
-import jp.ac.titech.itpro.sdl.myapp.database.entity.Photo
-import jp.ac.titech.itpro.sdl.myapp.databinding.FragmentPhotoBinding
+import jp.ac.titech.itpro.sdl.photomap.viewmodel.PhotoViewModel
+import jp.ac.titech.itpro.sdl.photomap.R
+import jp.ac.titech.itpro.sdl.photomap.database.AppDatabase
+import jp.ac.titech.itpro.sdl.photomap.database.entity.Location
+import jp.ac.titech.itpro.sdl.photomap.database.entity.Photo
+import jp.ac.titech.itpro.sdl.photomap.databinding.FragmentPhotoBinding
 import java.util.*
 import java.text.SimpleDateFormat
 import kotlin.Exception

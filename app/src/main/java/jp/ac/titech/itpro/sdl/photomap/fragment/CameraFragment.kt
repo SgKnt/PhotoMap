@@ -1,4 +1,4 @@
-package jp.ac.titech.itpro.sdl.myapp.fragment
+package jp.ac.titech.itpro.sdl.photomap.fragment
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -17,9 +17,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import jp.ac.titech.itpro.sdl.myapp.viewmodel.PhotoViewModel
-import jp.ac.titech.itpro.sdl.myapp.R
-import jp.ac.titech.itpro.sdl.myapp.databinding.FragmentCameraBinding
+import jp.ac.titech.itpro.sdl.photomap.viewmodel.PhotoViewModel
+import jp.ac.titech.itpro.sdl.photomap.R
+import jp.ac.titech.itpro.sdl.photomap.databinding.FragmentCameraBinding
 import java.util.*
 
 class CameraFragment : Fragment() {

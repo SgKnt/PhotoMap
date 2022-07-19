@@ -1,4 +1,4 @@
-package jp.ac.titech.itpro.sdl.myapp.fragment
+package jp.ac.titech.itpro.sdl.photomap.fragment
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -31,12 +31,12 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import jp.ac.titech.itpro.sdl.myapp.database.AppDatabase
-import jp.ac.titech.itpro.sdl.myapp.databinding.FragmentMapBinding
-import jp.ac.titech.itpro.sdl.myapp.R
-import jp.ac.titech.itpro.sdl.myapp.database.entity.Photo
-import jp.ac.titech.itpro.sdl.myapp.viewmodel.PhotoDetail
-import jp.ac.titech.itpro.sdl.myapp.viewmodel.PhotoDetailViewModel
+import jp.ac.titech.itpro.sdl.photomap.database.AppDatabase
+import jp.ac.titech.itpro.sdl.photomap.databinding.FragmentMapBinding
+import jp.ac.titech.itpro.sdl.photomap.R
+import jp.ac.titech.itpro.sdl.photomap.database.entity.Photo
+import jp.ac.titech.itpro.sdl.photomap.viewmodel.PhotoDetail
+import jp.ac.titech.itpro.sdl.photomap.viewmodel.PhotoDetailViewModel
 import java.io.Serializable
 import kotlin.concurrent.thread
 import kotlin.math.min
