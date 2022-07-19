@@ -34,7 +34,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import jp.ac.titech.itpro.sdl.myapp.database.AppDatabase
 import jp.ac.titech.itpro.sdl.myapp.databinding.FragmentMapBinding
 import jp.ac.titech.itpro.sdl.myapp.R
-import jp.ac.titech.itpro.sdl.myapp.database.entity.Photo as PhotoInfo
+import jp.ac.titech.itpro.sdl.myapp.database.entity.Photo
 import jp.ac.titech.itpro.sdl.myapp.viewmodel.PhotoDetail
 import jp.ac.titech.itpro.sdl.myapp.viewmodel.PhotoDetailViewModel
 import java.io.Serializable
@@ -52,7 +52,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickL
     private val photoDetailViewModel: PhotoDetailViewModel by activityViewModels()
     private var latlng: LatLng? = null
     private lateinit var locationMap: MutableMap<Long, LocationInfo>
-    private lateinit var photoInfoMap: MutableMap<Long, MutableList<PhotoInfo>>
+    private lateinit var photoInfoMap: MutableMap<Long, MutableList<Photo>>
     private lateinit var displayingImageMap: MutableMap<Long, Bitmap>
 
     inner class PhotoInfoWindowAdaptor : GoogleMap.InfoWindowAdapter {
